@@ -1,4 +1,7 @@
 import com.google.gson.Gson;
+import entities.Recipe;
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -7,16 +10,18 @@ import java.net.URLConnection;
 import java.util.Arrays;
 import java.util.Random;
 import java.util.Scanner;
+import org.hibernate.cfg.Configuration;
 
 public class CookingBookApp {
     private static final Gson GSON = new Gson();
+    private static final SessionFactory SESSION_FACTORY = new Configuration().configure().buildSessionFactory();
 
     public static void main(String[] args) throws IOException {
         if (args.length > 0) {
-            RecipeBody recipeForToday = parseRecipe(getAllRecipeText(args[0])).recipe;
-            System.out.println(recipeForToday.title);
-            System.out.println(recipeForToday.source_url);
-            System.out.println(Arrays.toString(recipeForToday.ingredients));
+            for (int i = 0; i < 49; i++) {
+                RecipeBody recipeForToday = parseRecipe(getAllRecipeText(args[0])).recipe;
+                extractAndSave(recipeForToday);
+            }
         } else {
             System.out.println("Add Your Api Key as an argument");
         }
@@ -39,5 +44,22 @@ public class CookingBookApp {
 
     private static MyRecipe parseRecipe(String json) {
         return GSON.fromJson(json, MyRecipe.class);
+    }
+
+    private static void extractAndSave(RecipeBody recipeBody) {
+        Session session = SESSION_FACTORY.openSession();
+        session.beginTransaction();
+        Recipe recipeToAddToDb = new Recipe();
+
+        if (!recipeBody.getRecipe_id().equals(recipeToAddToDb.getFork_id())) {
+            recipeToAddToDb.setFork_id(recipeBody.recipe_id);
+            recipeToAddToDb.setName(recipeBody.title);
+            recipeToAddToDb.setUrl(recipeBody.source_url);
+            recipeToAddToDb.setRecipe(Arrays.toString(recipeBody.ingredients));
+            session.persist(recipeToAddToDb);
+        }
+
+        session.flush();
+        session.close();
     }
 }

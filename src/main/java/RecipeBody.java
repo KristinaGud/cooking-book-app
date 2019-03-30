@@ -8,4 +8,8 @@ public class RecipeBody {
     Float social_rank;
     String publisher_url;
     String title;
+
+    public String getRecipe_id() {
+        return recipe_id;
+    }
 }
