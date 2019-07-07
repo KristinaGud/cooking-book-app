@@ -9,20 +9,20 @@ import org.springframework.web.client.RestTemplate;
 
 import java.net.URL;
 
-@Configuration
-public class RestConfig {
-
-	@Bean
-	public RestTemplate restTemplate() {
-		return new RestTemplate();
-	}
-
-	@Bean
-	public Gson gson() { return new Gson(); }
-
-	@Bean
-	public ChromeDriver chromeDriver() {
-		return new ChromeDriver();
-	}
-
-}
+//@Configuration
+//public class RestConfig {
+//
+//	@Bean
+//	public RestTemplate restTemplate() {
+//		return new RestTemplate();
+//	}
+//
+//	@Bean
+//	public Gson gson() { return new Gson(); }
+//
+//	@Bean
+//	public ChromeDriver chromeDriver() {
+//		return new ChromeDriver();
+//	}
+//
+//}
