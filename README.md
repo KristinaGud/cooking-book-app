@@ -10,7 +10,13 @@ The first one serves for searches and the second one for statistics.
 
 Functionality:
 -------------
-* User can log on / log out;
+* User can log in / log out;
 * User can search for recipes by entering product name;
 * User can check top upvoted recipes;
-* User gets email alert when new recipe with his/her chosen keyword appears
+* User gets email alert when new recipe with his/her chosen keyword appears.
+
+Before start create SQL schema and ElasticSearch index:
+* create index:
+curl -X PUT "localhost:9200/recipe"
+* create schema:
+CREATE SCHEMA \`cooking_book_app\`
