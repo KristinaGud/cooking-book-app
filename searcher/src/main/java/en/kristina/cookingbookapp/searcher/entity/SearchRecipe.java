@@ -7,8 +7,9 @@ import java.time.Instant;
 @Data
 public class SearchRecipe {
 	private Long id;
+	private String localId;
 	private String name;
 	private String url;
 	private String ingredients;
-	//private Instant addedDate;
+	private Instant addedDate;
 }
