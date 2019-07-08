@@ -8,7 +8,8 @@ import java.security.NoSuchAlgorithmException;
 
 @Service
 public class CommunicatorService {
-	protected String generateUniqueId(String tittle, String ingredients) throws NoSuchAlgorithmException {
+
+	public String generateUniqueId(String tittle, String ingredients) throws NoSuchAlgorithmException {
 		MessageDigest md = MessageDigest.getInstance("MD5");
 		md.update((tittle+ingredients).getBytes());
 		byte[] digest = md.digest();

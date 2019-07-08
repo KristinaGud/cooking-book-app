@@ -1,6 +1,5 @@
 package en.kristina.cookingbookapp.communicator.service;
 
-import lombok.RequiredArgsConstructor;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
