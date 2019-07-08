@@ -1,8 +1,7 @@
-package en.kristina.cookingbookapp.collector.repository;
+package en.kristina.cookingbookapp.repository;
 
-import en.kristina.cookingbookapp.collector.entity.Recipe;
+import en.kristina.cookingbookapp.entity.Recipe;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface RecipeRepository extends JpaRepository<Recipe, Long> {
-
 }

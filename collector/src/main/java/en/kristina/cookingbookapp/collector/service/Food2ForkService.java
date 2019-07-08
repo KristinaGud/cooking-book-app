@@ -3,17 +3,17 @@ package en.kristina.cookingbookapp.collector.service;
 import com.google.gson.Gson;
 import en.kristina.cookingbookapp.collector.dto.MyRecipe;
 import en.kristina.cookingbookapp.collector.dto.RecipeBody;
-import en.kristina.cookingbookapp.collector.entity.Recipe;
-import en.kristina.cookingbookapp.collector.repository.RecipeRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestTemplate;
+import en.kristina.cookingbookapp.communicator.service.QueueProducer;
+import en.kristina.cookingbookapp.communicator.service.CommunicatorService;
+import en.kristina.cookingbookapp.communicator.dto.RecipeDTO;
 
-import java.time.Instant;
+import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
 import java.util.Random;
 
@@ -28,28 +28,26 @@ public class Food2ForkService {
 	@Value("${api.food2fork.key}")
 	private String apiKey;
 
-	private final RecipeRepository recipeRepository;
 	private final RestTemplate restTemplate;
 	private final Gson gson;
+	private final QueueProducer queueProducer;
+	private final CommunicatorService communicatorService;
 
-	@Transactional
 	@Scheduled(fixedDelay = 86400000) //24h after the last search
-	public void save50RecipesFromFood2Fork() {
-		for (int i = 0; i < 2; i++) {
-			Recipe recipeToSave = new Recipe();
-			Recipe recipe = getData();
-			recipeToSave.setIs_active(true);
-			recipeToSave.setName(recipe.getName());
-			recipeToSave.setSource_url(recipe.getSource_url());
-			recipeToSave.setRecipe(recipe.getRecipe());
-			recipeToSave.setAddedDate(Instant.now());
-			log.info("recipe {} will be saved", recipeToSave.getName());
-			recipeRepository.save(recipeToSave);
+	public void send50RecipesFromFood2ForkToSave() {
+		for (int i = 0; i < 50; i++) {
+			RecipeDTO recipe = getData();
+			String serializedRecipe = gson.toJson(recipe);
+			try {
+				queueProducer.sendRecipe(serializedRecipe);
+				log.info("Sending recipe " + recipe.getName());
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
 		}
 	}
 
-	public Recipe getData() {
-
+	private RecipeDTO getData() {
 		String resourceAddress = urlToFood2Fork
 				.replace("{apiKey}", apiKey)
 				.replace("{localRecipeId}", pickAtRandomRecipeId());
@@ -63,14 +61,26 @@ public class Food2ForkService {
 			throw new RuntimeException("Error when getting data from API");
 		}
 
-		log.info(extractedRecipe.getTitle());
-		log.info("products: " + Arrays.toString(extractedRecipe.getIngredients()));
-		Recipe recipe = new Recipe();
 
-		recipe.setIs_active(true);
-		recipe.setName(extractedRecipe.getTitle());
-		recipe.setSource_url(extractedRecipe.getSource_url());
-		recipe.setRecipe(Arrays.toString(extractedRecipe.getIngredients()));
+		String title = extractedRecipe.getTitle();
+		log.info(title);
+		String ingredients = Arrays.toString(extractedRecipe.getIngredients());
+		log.info("products: " + ingredients);
+
+		RecipeDTO recipe = new RecipeDTO();
+		String generatedUniqueId = null;
+		try {
+			generatedUniqueId = communicatorService.generateUniqueId(title, ingredients);
+		} catch (NoSuchAlgorithmException e) {
+			e.printStackTrace();
+		}
+
+		if (generatedUniqueId != null) {
+			recipe.setLocalId(generatedUniqueId);
+			recipe.setName(title);
+			recipe.setSource(extractedRecipe.getSource_url());
+			recipe.setIngredients(ingredients);
+		}
 
 		return recipe;
 	}
@@ -83,7 +93,7 @@ public class Food2ForkService {
 
 	private String pickAtRandomRecipeId() {
 		Random random = new Random();
-		Integer pickedId = random.nextInt(60000);
+		int pickedId = random.nextInt(60000);
 		return Integer.toString(pickedId);
 	}
 }

@@ -1,4 +1,4 @@
-package en.kristina.cookingbookapp.collector.entity;
+package en.kristina.cookingbookapp.entity;
 
 import lombok.Data;
 import org.springframework.data.annotation.Id;
@@ -20,15 +20,17 @@ public class Recipe {
 	@Column(nullable = false, unique = true)
 	private String name;
 
-	private String source_url;
+	private String sourceUrl;
 
 	@Column
 	@Lob
 	private String recipe;
 
-	private Boolean is_active;
+	private Boolean isActive;
 
 	@PastOrPresent
 	@DateTimeFormat
 	private Instant addedDate;
+
+	private Long upvotes;
 }

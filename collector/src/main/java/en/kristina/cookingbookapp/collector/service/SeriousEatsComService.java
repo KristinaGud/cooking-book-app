@@ -1,19 +1,20 @@
 package en.kristina.cookingbookapp.collector.service;
 
-import en.kristina.cookingbookapp.collector.entity.Recipe;
-import en.kristina.cookingbookapp.collector.repository.RecipeRepository;
+
+import com.google.gson.Gson;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.openqa.selenium.By;
-import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import en.kristina.cookingbookapp.communicator.dto.RecipeDTO;
+import en.kristina.cookingbookapp.communicator.service.CommunicatorService;
+import en.kristina.cookingbookapp.communicator.service.QueueProducer;
 
-import java.time.Instant;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -23,12 +24,14 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class SeriousEatsComService {
 
-	private final RecipeRepository recipeRepository;
 
 	@Value("${blog.address}")
 	private String url;
 
 	private final ChromeDriver chromeDriver;
+	private final Gson gson;
+	private final CommunicatorService communicatorService;
+	private final QueueProducer queueProducer;
 
 	@Transactional
 	@Scheduled(fixedDelay = 2592000000L) //30 days after the last search
@@ -47,7 +50,7 @@ public class SeriousEatsComService {
 				log.info("found url: " + url);
 
 				try {
-					Recipe recipe = new Recipe();
+					RecipeDTO recipe = new RecipeDTO();
 					chromeDriver.navigate().to(url);
 					chromeDriver.wait(3000);
 
@@ -58,16 +61,16 @@ public class SeriousEatsComService {
 					String source = chromeDriver.getCurrentUrl();
 					log.info("url: " + source);
 
+					String generatedId = communicatorService.generateUniqueId(name, products);
+					recipe.setLocalId(generatedId);
 					recipe.setName(name);
-					recipe.setRecipe(products);
-					recipe.setSource_url(source);
-					recipe.setIs_active(true);
-					recipe.setAddedDate(Instant.now());
+					recipe.setIngredients(products);
+					recipe.setSource(source);
 
-					recipeRepository.save(recipe);
+					queueProducer.sendRecipe(gson.toJson(recipe));
 					chromeDriver.wait(3000);
 
-				} catch (InterruptedException | NoSuchElementException e) {
+				} catch (Exception e) {
 					e.printStackTrace();
 				}
 			}
