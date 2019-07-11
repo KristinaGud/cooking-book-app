@@ -43,7 +43,7 @@ public class SeriousEatsComService {
 			chromeDriver.wait(3000);
 			List<WebElement> links = chromeDriver.findElementsByClassName("module__link");
 
-			Set<String> urlsSet = links.stream().map(a -> a.getAttribute("href")).collect(Collectors.toSet());
+			Set<String> urlsSet = links.stream().map(a -> a.getAttribute("href")).limit(5).collect(Collectors.toSet());
 			urlsSet.forEach(System.out::println);
 
 			for (String url : urlsSet ) {

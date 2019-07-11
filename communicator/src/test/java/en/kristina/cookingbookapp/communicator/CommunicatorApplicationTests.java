@@ -3,7 +3,6 @@ package en.kristina.cookingbookapp.communicator;
 import com.google.gson.Gson;
 import en.kristina.cookingbookapp.communicator.dto.RecipeDTO;
 import en.kristina.cookingbookapp.communicator.service.CommunicatorService;
-import en.kristina.cookingbookapp.communicator.service.QueueConsumer;
 import en.kristina.cookingbookapp.communicator.service.QueueProducer;
 import org.junit.Assert;
 import org.junit.Test;
@@ -20,9 +19,6 @@ public class CommunicatorApplicationTests {
 
 	@Autowired
 	private CommunicatorService service;
-
-	@Autowired
-	private QueueConsumer consumer;
 
 	@Autowired
 	private QueueProducer producer;
@@ -48,8 +44,6 @@ public class CommunicatorApplicationTests {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-
-		//consumer.receiveRecipe(serializedRecipe);
 
 		Assert.assertEquals("message successfully sent", sentInfo);
 	}

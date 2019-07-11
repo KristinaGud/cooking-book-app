@@ -1,6 +1,7 @@
 package en.kristina.cookingbookapp.searcher.config;
 
 import com.google.gson.Gson;
+import en.kristina.cookingbookapp.communicator.service.QueueConsumer;
 import org.apache.http.HttpHost;
 import org.elasticsearch.client.RestClient;
 import org.elasticsearch.client.RestHighLevelClient;
@@ -17,4 +18,8 @@ public class ElasticSearchConfig {
 						new HttpHost("localhost", 9200, "http")));
 	}
 
+	@Bean
+	public QueueConsumer queueConsumer() {
+		return new QueueConsumer();
+	}
 }
