@@ -1,6 +1,6 @@
 package en.kristina.cookingbookapp.searcher.config;
 
-import com.google.gson.Gson;
+import com.rabbitmq.client.AMQP;
 import en.kristina.cookingbookapp.communicator.service.QueueConsumer;
 import org.apache.http.HttpHost;
 import org.elasticsearch.client.RestClient;

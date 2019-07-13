@@ -35,7 +35,7 @@ public class Food2ForkService {
 
 	@Scheduled(fixedDelay = 86400000) //24h after the last search
 	public void send50RecipesFromFood2ForkToSave() {
-		for (int i = 0; i < 5; i++) {
+		for (int i = 0; i < 1; i++) {
 			RecipeDTO recipe = getData();
 			String serializedRecipe = gson.toJson(recipe);
 			try {

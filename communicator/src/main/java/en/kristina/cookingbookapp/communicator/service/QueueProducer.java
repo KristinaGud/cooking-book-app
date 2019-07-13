@@ -12,10 +12,12 @@ import org.springframework.stereotype.Component;
 public class QueueProducer {
 
 	private final RabbitTemplate rabbitTemplate;
-	private final Queue queue;
+	private final Queue queueToSendToElastic;
+	private final Queue queueToSendToMysql;
 
 	public void sendRecipe(String recipe) {
 		log.info("Sending > " + recipe);
-		rabbitTemplate.convertAndSend(queue.getName(), recipe);
+		rabbitTemplate.convertAndSend(queueToSendToElastic.getName(), recipe);
+		rabbitTemplate.convertAndSend(queueToSendToMysql.getName(), recipe);
 	}
 }

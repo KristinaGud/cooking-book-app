@@ -10,7 +10,14 @@ import org.springframework.context.annotation.Configuration;
 public class RabbitMQConfig {
 
 	@Bean
-	public Queue queue() {
+	public Queue queueToSendToElastic() {
 		return new Queue("all-recipes", true, false, false);
 	}
+
+	@Bean
+	public Queue queueToSendToMysql() {
+		return new Queue("all-recipes-mysql", true, false, false);
+	}
+
+	//TODO queue exchange
 }

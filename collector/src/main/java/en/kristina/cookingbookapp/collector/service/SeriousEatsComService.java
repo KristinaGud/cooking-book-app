@@ -67,8 +67,11 @@ public class SeriousEatsComService {
 					recipe.setIngredients(products);
 					recipe.setSource(source);
 
-					queueProducer.sendRecipe(gson.toJson(recipe));
-					chromeDriver.wait(3000);
+					if (!recipe.getIngredients().isEmpty() && !recipe.getName().isEmpty()) {
+						queueProducer.sendRecipe(gson.toJson(recipe));
+						chromeDriver.wait(3000);
+					}
+
 
 				} catch (Exception e) {
 					e.printStackTrace();
