@@ -1,8 +1,6 @@
 package en.kristina.cookingbookapp.entity;
 
 import lombok.Data;
-import org.springframework.format.annotation.DateTimeFormat;
-
 import javax.persistence.*;
 import javax.validation.constraints.PastOrPresent;
 import java.time.Instant;
@@ -16,18 +14,22 @@ public class Recipe {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
+	@Column(name = "local_id")
 	private String localId;
 
 	private String name;
 
+	@Column(name = "source")
 	private String sourceUrl;
 
-	@Column
 	@Lob
 	private String ingredients;
 
+	@Column(name = "active")
 	private Boolean isActive;
 
+	@PastOrPresent
+	@Column(name = "added_date")
 	private Instant addedDate;
 
 	private Long upvotes;
