@@ -15,7 +15,7 @@ public class QueueConsumer {
 	@Autowired
 	private Gson gson;
 
-	@RabbitListener(queues = {"${elastic.queue.name}", "${mysql.queue.name}"})
+	@RabbitListener(queues = {"${queue.name}"})
 	public void receiveRecipe(String recipe) {
 		log.info("Received <" + recipe + ">");
 		RecipeDTO recipeDTO = gson.fromJson(recipe, RecipeDTO.class);

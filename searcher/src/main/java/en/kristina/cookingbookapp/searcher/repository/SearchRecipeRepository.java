@@ -45,8 +45,7 @@ public class SearchRecipeRepository {
 	public Map<String, String> findAllRecipesByIngredient(String ingredient) throws IOException {
 		SearchRequest search = new SearchRequest("recipe")
 				.source(new SearchSourceBuilder()
-						.query(QueryBuilders.termQuery("recipe", ingredient)));
-
+						.query(QueryBuilders.termQuery("ingredients", ingredient)));
 
 		SearchHits hits = client.search(search, RequestOptions.DEFAULT).getHits();
 
